@@ -30,7 +30,7 @@ let lastActivity = 0
 function findEditor(): any {
 
 
-    //strudel uses codemirror 6, look for EditorView instance
+    //strudel uses codemirror 6
 
     
 
@@ -67,6 +67,8 @@ function findEditor(): any {
 
 
             //cm6 stores view differently
+
+
             if((el as any).cmView) {
                 return (el as any).cmView.view
             }
@@ -137,7 +139,7 @@ function attachEditorListeners(): void {
     try {
 
 
-        //detect document changes (typing)
+        //detect typing
 
         editorView.dom.addEventListener('input', () => {
 
@@ -230,7 +232,7 @@ function handleRead(): void {
 
 
     const now = Date.now()
-
+         
 
 
     //dont spam read events
