@@ -1,6 +1,4 @@
-//heartbeat tracker class
-//manages creating heartbeats + rate limiting (30sec throttle)
-
+//heartbeat tracking file, dis also crated a basic payload
 
 
 import { heartbeat, HeartbeatMetadata } from './types'
@@ -20,7 +18,9 @@ export class HeartbeatTracker {
     private extractor: MetadataExtractor | null = null
 
 
-    private THROTTLE_MS = 30000  //30 seconds wakatime spec
+    private THROTTLE_MS = 30000  
+    
+    //30 seconds wakatime spec
 
 
 
@@ -35,7 +35,9 @@ export class HeartbeatTracker {
 
 
 
-    //set the metadata extractor (when cm is ready)
+    //set the metadata extractor
+
+
 
     setExtractor(ext: MetadataExtractor): void {
 
@@ -48,7 +50,9 @@ export class HeartbeatTracker {
 
 
 
-    //check if we should send a heartbeat (rate limit logic)
+    //check if we should send a heartbeat 
+
+
 
 
     shouldSendBeat(entity: string): boolean {
@@ -59,7 +63,7 @@ export class HeartbeatTracker {
 
 
 
-        //send if its been 30+ seconds
+        //send if its been more than rate limit seconds
 
 
         if(timeSinceLast >= this.THROTTLE_MS) {
@@ -69,7 +73,7 @@ export class HeartbeatTracker {
 
 
 
-        //or if entity changed (switched files/patterns)
+        //if files or pattern switched
 
         if(entity !== this.lastEntity) {
 
@@ -132,7 +136,7 @@ export class HeartbeatTracker {
 
                 entity: entity,
                 type: "file",
-                time: Date.now() / 1000,  //SECONDS not ms!!
+                time: Date.now() / 1000,  
                 language: "javascript",
                 is_write: isWrite,
 
@@ -177,7 +181,7 @@ export class HeartbeatTracker {
 
 
 
-    //record an edit event (typing)
+    //record typing 
 
 
     recordEdit(): heartbeat | null {
@@ -189,7 +193,7 @@ export class HeartbeatTracker {
 
 
 
-    //record a read event (cursor move, no typing)
+    //reading one, it shows on hackatime i saw
 
 
     recordRead(): heartbeat | null {
@@ -203,7 +207,7 @@ export class HeartbeatTracker {
 
 
 
-    //manual reset (for testing or config changes)
+    //manual reset when i debug
 
     reset(): void {
 
