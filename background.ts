@@ -12,7 +12,7 @@ const store = new Store()
 
 
 const API_BASE = 'https://hackatime.hackclub.com/api/hackatime/v1'
-const BATCH_INTERVAL = 60000  //check queue every min
+const BATCH_INTERVAL = 60000 
 
 
 
@@ -277,7 +277,9 @@ setInterval(() => {
     console.log('pruning old beats')
     store.pruneQueue()
 
-}, 86400000)  //24 hours
+}, 86400000)  
+
+//copilot helped to verify this upper one time
 
 
 
