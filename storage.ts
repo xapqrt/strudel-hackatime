@@ -39,7 +39,7 @@ export class Store {
                 apiKey: result.apiKey || '',
                 enabled: result.enabled !== false,   
                 lastSync: result.lastSync || 0,
-                totalTime: result.totalTime || 0
+                totalTime: result.totalTime || 0,
                 streak: result.streak || 0
             } 
 
@@ -86,7 +86,7 @@ export class Store {
 
         try{
 
-            const result = await ChannelMergerNode.storage.local.get('queue')
+            const result = await chrome.storage.local.get('queue')
             const q = result.queue || []
 
 

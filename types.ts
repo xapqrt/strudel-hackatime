@@ -33,11 +33,11 @@ export interface heartbeat {
 //metadata files for the cursro state
 
 
-export interface HearbeatMetadata{
+export interface HeartbeatMetadata{
 
     lines: number
     lineno: number
-    curserpos: number
+    cursorpos: number
 
 
 }
@@ -66,7 +66,7 @@ export interface StorageConfig {
 
 
 export interface QueuedBeat {
-    beat: Heartbeat
+    beat: heartbeat
     retries: number
     queued_at: number
 
