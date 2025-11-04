@@ -1,6 +1,4 @@
-//extracting cursor + line metadata from codemirror
-//goal: grab cursor pos, line num, total lines from CM
-
+//will try to extract cursor and line metadata
 
 import { HeartbeatMetadata } from './types'
 
@@ -40,7 +38,7 @@ export class MetadataExtractor {
 
 
 
-        //convert pos to line num (1-indexed for wakatime)
+        //convert pos to line num one indexed for wakatime
 
         const line = state.doc.lineAt(pos)
         const lineNo = line.number
@@ -69,7 +67,7 @@ export class MetadataExtractor {
 
 
 
-        //TODO: maybe track selection range too??
+        //will maybe track selective range too ngl
     }
 
 
