@@ -65,7 +65,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         store.getQueue().then(q => {
             sendResponse({size: q.length})
-        })
+        })  
+
+            
+        
 
 
         return true
@@ -83,6 +86,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         processQueue().then(() => {
 
             sendResponse({ ok: true})
+        })
+
+
+        return true
+    }
+
+
+
+    else if(msg.type === 'FETCH_STATS') {
+
+
+        //popup wants real stats from api
+
+
+        fetchStatsFromAPI().then(stats => {
+
+            sendResponse(stats)
+        }).catch(e => {
+
+            console.error('stats fetch failed:', e)
+            sendResponse({ error: true })
         })
 
 
@@ -159,7 +183,6 @@ async function updateBadge(count?: number): Promise<void> {
             const q = await store.getQueue()
             count = q.length
         }
-
 
 
         if(count > 0) {
@@ -365,6 +388,125 @@ setInterval(() => {
 }, 86400000)  
 
 //copilot helped to verify this upper one time
+
+
+
+
+
+
+//fetch stats from hackatime api
+
+
+async function fetchStatsFromAPI(): Promise<any> {
+
+
+    try {
+
+        const cfg = await store.loadConfig()
+
+
+
+        if(!cfg.apiKey) {
+
+            console.log('no api key, cant fetch stats')
+            return { error: true, message: 'no api key' }
+        }
+
+
+
+
+        //fetch today stats
+
+        const today = new Date()
+        const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+        const end = new Date(start)
+
+        end.setDate(end.getDate() + 1)
+
+
+
+
+        const startStr = start.toISOString().split('T')[0]
+        const endStr = end.toISOString().split('T')[0]
+
+
+
+
+        const url = `${API_BASE}/users/current/summaries?start=${startStr}&end=${endStr}`
+
+
+
+        console.log('fetching stats from:', url)
+
+
+
+        const response = await fetch(url, {
+
+            method: 'GET',
+            headers: {
+
+                'Authorization': `Bearer ${cfg.apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        })
+
+
+
+
+        if(response.ok) {
+
+            const data = await response.json()
+
+
+            console.log('got stats from api:', data)
+
+
+
+            //extract today time
+
+            let todaySeconds = 0
+
+
+            if(data.data && data.data.length > 0) {
+
+                todaySeconds = data.data[0].grand_total?.total_seconds || 0
+            }
+
+
+
+
+            //cache it
+
+            await store.saveConfig({ 
+
+                totalTime: todaySeconds,
+                lastSync: Date.now()
+            })
+
+
+
+            return {
+
+                todaySeconds: todaySeconds,
+                lastSync: Date.now()
+            }
+
+
+        } else {
+
+            const txt = await response.text()
+            console.error(`stats api error ${response.status}:`, txt)
+
+            return { error: true, status: response.status }
+        }
+
+
+    } catch(e) {
+
+        console.error('stats fetch failed:', e)
+        return { error: true, message: String(e) }
+    }
+}
 
 
 

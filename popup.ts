@@ -134,7 +134,7 @@ async function saveConfig(): Promise<void> {
 
 
 
-//load stats from storage
+//load stats from api
 
 
 async function loadStats(): Promise<void> {
@@ -142,11 +142,47 @@ async function loadStats(): Promise<void> {
 
     try {
 
-        const response = await chrome.runtime.sendMessage({ type: 'GET_CONFIG' })
+
+        //fetch fresh stats from api
+
+        const apiStats = await chrome.runtime.sendMessage({ type: 'FETCH_STATS' })
 
 
 
-        if(response) {
+        let totalTime = 0
+        let lastSync = 0
+
+
+
+        if(apiStats && !apiStats.error) {
+
+
+            totalTime = apiStats.todaySeconds || 0
+            lastSync = apiStats.lastSync || 0
+
+
+            console.log('loaded fresh stats from api')
+
+
+        } else {
+
+
+            //fallback to cached
+
+            const response = await chrome.runtime.sendMessage({ type: 'GET_CONFIG' })
+
+
+            if(response) {
+
+                totalTime = response.totalTime || 0
+                lastSync = response.lastSync || 0
+
+
+                console.log('using cached stats')
+            }
+        }
+
+
 
 
             //today time
@@ -155,10 +191,8 @@ async function loadStats(): Promise<void> {
 
             if(todayEl) {
 
-                const hours = Math.floor((response.totalTime || 0) / 3600)
-                const mins = Math.floor(((response.totalTime || 0) % 3600) / 60)
-
-
+                const hours = Math.floor(totalTime / 3600)
+                const mins = Math.floor((totalTime % 3600) / 60)
 
                 if(hours > 0) {
 
@@ -177,51 +211,37 @@ async function loadStats(): Promise<void> {
 
 
 
-            //streak
+        //last sync
 
-            const streakEl = document.getElementById('streak')
+        const lastSyncEl = document.getElementById('lastSync')
 
-            if(streakEl) {
+        if(lastSyncEl) {
 
-                const days = response.streak || 0
-                streakEl.textContent = `${days} days`
-            }
+            if(lastSync && lastSync > 0) {
 
-
-
-
-            //last sync
-
-            const lastSyncEl = document.getElementById('lastSync')
-
-            if(lastSyncEl) {
-
-                if(response.lastSync && response.lastSync > 0) {
-
-                    const diff = Date.now() - response.lastSync
-                    const mins = Math.floor(diff / 60000)
+                const diff = Date.now() - lastSync
+                const mins = Math.floor(diff / 60000)
 
 
 
-                    if(mins < 1) {
+                if(mins < 1) {
 
-                        lastSyncEl.textContent = 'just now'
+                    lastSyncEl.textContent = 'just now'
 
-                    } else if(mins < 60) {
+                } else if(mins < 60) {
 
-                        lastSyncEl.textContent = `${mins}m ago`
-
-                    } else {
-
-                        const hrs = Math.floor(mins / 60)
-                        lastSyncEl.textContent = `${hrs}h ago`
-                    }
-
+                    lastSyncEl.textContent = `${mins}m ago`
 
                 } else {
 
-                    lastSyncEl.textContent = 'never'
+                    const hrs = Math.floor(mins / 60)
+                    lastSyncEl.textContent = `${hrs}h ago`
                 }
+
+
+            } else {
+
+                lastSyncEl.textContent = 'never'
             }
         }
 
