@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>hackatime strudel tracker</title>
+        <link rel="stylesheet" href="popup.css">
+
+
+
+
+
+    </head>
+    <body>
+
+
+
+
+
+
+        <div class="container">
+
+
+
+            <div class="header">
+
+
+                <h1> hackatime</h1>
+                <p>Strudel tracker!</p>
+        
+            </div>
+
+
+
+
+
+            <div class = "stats" id = "stats">
+
+
+                <div class = "stat-item">
+                    <span class = "label">today</span>
+                    <span class = "value" id="todayTime">--</span>
+                </div>
+
+
+                <div class="stat-item">
+
+                    <span class ="label">last sync</span>
+                    <span class="value" id="lastSync">never</span>
+                </div>
+            </div>
+
+
+
+
+
+
+            <!--settitng section-->
+
+            <div class = "settings">
+
+                <div class = "form-group">
+                    <label for="apiKey">api key</label>
+                    <input
+                        type="password"
+                        id="apiKey"
+                        placeholder="paste your hackatime key"
+                    />
+                </div>
+
+
+
+
+
+                <div class = "form-group checkbox-group">
+
+                    <label>
+
+                        <input type="checkbox" id="enabled"/>
+                        <span>tracking enabled</span>
+                    </label>
+                </div>
+
+
+
+                <button id="saveBtn" class = "save-btn">save settings</button>
+
+                <div class = "status" id ="status"></div>
+            </div>
+
+
+
+
+
+
+            <div class = "footer">
+                <a href = "https://hackatime.hackclub.com" target = "_blank" rel="noopener">
+                    get api key
+
+                </a>
+            </div>
+        </div>
+
+
+
+        <script src = "popup.js"></script>
+    </body>
+</html>
+
+
+

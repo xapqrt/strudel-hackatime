@@ -1,7 +1,8 @@
-/* retro terminal vibes */
+
 
 
 * {
+
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -10,7 +11,6 @@
 
 
 body {
-
     width: 320px;
     min-height: 400px;
     background: #0a0e14;
@@ -22,15 +22,12 @@ body {
 
 
 
-
 .container {
+
     padding: 16px;
+
 }
 
-
-
-
-/* header */
 
 
 .header {
@@ -48,9 +45,9 @@ body {
     color: #7dd3fc;
     font-weight: normal;
     letter-spacing: 1px;
+
+
 }
-
-
 
 .subtitle {
 
@@ -60,13 +57,7 @@ body {
 }
 
 
-
-
-/* stats */
-
-
 .stats {
-
     margin-bottom: 24px;
     display: flex;
     flex-direction: column;
@@ -76,19 +67,18 @@ body {
 
 
 .stat-item {
-
     display: flex;
     justify-content: space-between;
 
     padding: 8px 10px;
     background: #0d1117;
     border-left: 2px solid #38bdf8;
+
+
+
 }
 
-
-
 .stat-item .label {
-
     color: #6b7780;
     text-transform: uppercase;
     font-size: 11px;
@@ -96,55 +86,50 @@ body {
 }
 
 
-
 .stat-item .value {
-
     color: #e5e9eb;
     font-weight: bold;
 }
 
 
 
-
-/* settings */
-
-
 .settings {
     margin-bottom: 16px;
+
 }
 
 
-
 .form-group {
-
     margin-bottom: 14px;
 }
 
 
-
 .form-group label {
-
     display: block;
     margin-bottom: 6px;
 
+
+
     color: #9ca3af;
+
     font-size: 12px;
+
 }
 
 
-
-.form-group input[type="password"] {
+.form-group input[type="password"]{
 
     width: 100%;
     padding: 8px 10px;
-
     background: #0d1117;
     border: 1px solid #1f2933;
-    color: #e5e9eb;
 
+    color: #e5e9eb;
     font-family: 'Courier New', monospace;
+    
     font-size: 12px;
 }
+
 
 
 
@@ -152,17 +137,17 @@ body {
 
     outline: none;
     border-color: #38bdf8;
+
+
 }
 
 
-
-
-.checkbox-group {
+.checkbox-group{
 
     display: flex;
     align-items: center;
-}
 
+}
 
 
 .checkbox-group label {
@@ -171,12 +156,11 @@ body {
     align-items: center;
     gap: 8px;
 
+
     cursor: pointer;
 }
 
-
-
-.checkbox-group input[type="checkbox"] {
+.checkbox-group input[type="checkbox"]{
 
     width: 16px;
     height: 16px;
@@ -186,28 +170,29 @@ body {
 
 
 
-/* button */
 
 
-.save-btn {
+.save-btn{
 
     width: 100%;
     padding: 10px;
+
 
     background: #1e3a5f;
     border: 1px solid #38bdf8;
     color: #7dd3fc;
 
-    font-family: 'Courier New', monospace;
+
+
+    font-family: 'Courier New', 'Courier New', monospace;
     font-size: 13px;
     cursor: pointer;
-
     transition: all 0.2s;
 }
 
 
 
-.save-btn:hover {
+.save-btn:hover{
 
     background: #2a4a6f;
     border-color: #7dd3fc;
@@ -216,13 +201,13 @@ body {
 
 
 .save-btn:active {
+
+
+
     transform: translateY(1px);
 }
 
 
-
-
-/* status message */
 
 
 .status {
@@ -232,13 +217,14 @@ body {
 
     font-size: 11px;
     text-align: center;
-
     border-radius: 2px;
 }
 
 
 
-.status.success {
+.status.success{
+
+
 
     background: #0f3d2f;
     color: #6ee7b7;
@@ -248,38 +234,34 @@ body {
 
 
 .status.error {
-
     background: #3d0f0f;
     color: #fca5a5;
     border: 1px solid #ef4444;
+
+
+
+
 }
 
-
-
-
-/* footer */
-
-
-.footer {
+.footer{
 
     margin-top: 20px;
     padding-top: 12px;
-
     border-top: 1px solid #1f2933;
     text-align: center;
 }
 
 
 
-.footer a {
 
+.footer a {
     color: #6b7780;
     text-decoration: none;
     font-size: 11px;
 
+
     transition: color 0.2s;
 }
-
 
 
 .footer a:hover {

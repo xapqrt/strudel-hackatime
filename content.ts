@@ -58,7 +58,9 @@ function findEditor(): any {
 
         //try to get view from element
 
-        for(const el of cmElements) {
+        for(let i=0; i<cmElements.length; i++) {
+
+            const el = cmElements[i]
 
             if((el as any).CodeMirror) {
 
