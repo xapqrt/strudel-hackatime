@@ -54,6 +54,40 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         return true
     }
+
+
+
+    else if(msg.type === 'GET_QUEUE_SIZE'){
+
+        //ppoup asking for queue size
+
+
+
+        store.getQueue().then(q => {
+            sendResponse({size: q.length})
+        })
+
+
+        return true
+    }
+
+    else if(msg.type === 'RETRY_QUEUE'){
+
+
+
+        //manual retry from popup
+
+
+        console.log('manual retry triggered')
+
+        processQueue().then(() => {
+
+            sendResponse({ ok: true})
+        })
+
+
+        return true
+    }
 })
 
 
@@ -90,6 +124,13 @@ async function queueBeat(beat: heartbeat): Promise<void> {
 
 
 
+        //update badge
+
+        
+        updateBadge(queue.length)
+
+
+
         //try to send immediately
 
         processQueue()
@@ -97,6 +138,44 @@ async function queueBeat(beat: heartbeat): Promise<void> {
 
     } catch(e) {
         console.error('failed to queue beat:', e)
+    }
+}
+
+
+
+
+
+
+//update extension badge with queue size
+
+
+async function updateBadge(count?: number): Promise<void> {
+
+
+    try {
+
+        if(count === undefined) {
+
+            const q = await store.getQueue()
+            count = q.length
+        }
+
+
+
+        if(count > 0) {
+
+            chrome.action.setBadgeText({ text: count.toString() })
+            chrome.action.setBadgeBackgroundColor({ color: '#f59e0b' })  //orange
+
+        } else {
+
+            chrome.action.setBadgeText({ text: '' })
+        }
+
+
+    } catch(e) {
+
+        console.error('badge update failed:', e)
     }
 }
 
@@ -188,6 +267,12 @@ async function processQueue(): Promise<void> {
         //save remaining beats
 
         await store.saveQueue(remaining)
+
+
+
+        //update badge
+
+        updateBadge(remaining.length)
 
 
     } catch(e) {

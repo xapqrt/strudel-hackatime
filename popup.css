@@ -133,7 +133,7 @@ body {
 
 
 
-.form-group input[type="password"]:focus {
+.form-grouup input[type="password"]:focus {
 
     outline: none;
     border-color: #38bdf8;
@@ -266,4 +266,17 @@ body {
 
 .footer a:hover {
     color: #38bdf8;
+}
+
+
+
+
+#queueItem {
+    display: none;
+}
+
+
+
+#retryBtn {
+    display: none;
 }

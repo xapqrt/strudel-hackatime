@@ -38,4 +38,12 @@ declare namespace chrome {
             function set(items: any, callback?: () => void): Promise<void>
         }
     }
+
+
+
+    namespace action {
+
+        function setBadgeText(details: { text: string }): Promise<void>
+        function setBadgeBackgroundColor(details: { color: string }): Promise<void>
+    }
 }

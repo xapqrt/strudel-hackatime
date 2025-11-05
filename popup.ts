@@ -10,12 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadConfig()
     loadStats()
+    loadQueueSize()
 
 
 
     //save button
 
     document.getElementById('saveBtn')?.addEventListener('click', saveConfig)
+
+
+
+    //retry button
+
+    document.getElementById('retryBtn')?.addEventListener('click', retryQueue)
 })
 
 
@@ -222,6 +229,120 @@ async function loadStats(): Promise<void> {
     } catch(e) {
 
         console.error('failed to load stats:', e)
+    }
+}
+
+
+
+
+
+
+//load queue size
+
+
+async function loadQueueSize(): Promise<void> {
+
+
+    try {
+
+        const response = await chrome.runtime.sendMessage({ type: 'GET_QUEUE_SIZE' })
+
+
+
+        if(response && response.size !== undefined) {
+
+
+            const queueItem = document.getElementById('queueItem')
+            const queueSize = document.getElementById('queueSize')
+            const retryBtn = document.getElementById('retryBtn')
+
+
+
+            if(response.size > 0) {
+
+
+                //show queue stat
+
+                if(queueItem) {
+                    queueItem.style.display = 'flex'
+                }
+
+
+                if(queueSize) {
+                    queueSize.textContent = `${response.size} beats`
+                }
+
+
+
+                //show retry button
+
+                if(retryBtn) {
+                    retryBtn.style.display = 'block'
+                }
+
+
+            } else {
+
+
+                //hide if empty
+
+                if(queueItem) {
+                    queueItem.style.display = 'none'
+                }
+
+
+                if(retryBtn) {
+                    retryBtn.style.display = 'none'
+                }
+            }
+        }
+
+
+    } catch(e) {
+
+        console.error('failed to load queue size:', e)
+    }
+}
+
+
+
+
+
+
+//retry failed beats
+
+
+async function retryQueue(): Promise<void> {
+
+
+    try {
+
+        showStatus('retrying...', 'success')
+
+
+
+        await chrome.runtime.sendMessage({ type: 'RETRY_QUEUE' })
+
+
+
+        showStatus('retry complete', 'success')
+
+
+
+        //reload queue size after retry
+
+        setTimeout(() => {
+
+            loadQueueSize()
+            loadStats()
+
+        }, 1000)
+
+
+    } catch(e) {
+
+        console.error('retry failed:', e)
+        showStatus('retry failed', 'error')
     }
 }
 
