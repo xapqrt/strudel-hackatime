@@ -339,6 +339,11 @@ function pollForEditor(): void {
     if(pollAttempts >= maxAttempts) {
 
         console.error('gave up finding editor after', pollAttempts, 'attempts')
+
+
+        //fallback to mutation observer
+
+        startMutationObserver() 
         return
     }
 
@@ -356,6 +361,71 @@ function pollForEditor(): void {
 
 
     setTimeout(pollForEditor, delay)
+}
+
+
+
+
+
+
+//mutation observer to watch for editor appearing
+
+
+
+let observer: MutationObserver | null = null 
+
+
+
+
+function startMutationObserver(): void {
+
+
+    console.log('starting mutation observer for editor')
+
+
+
+    observer = new MutationObserver((mutations) => {
+
+
+        //check if editor appeared
+
+        for(const mutation of mutations) {
+
+
+            if(mutation.addedNodes.length > 0) {
+
+
+                const view = findEditor()
+
+
+                if(view) {
+
+                    console.log('mutation observer found editor')
+                    
+
+                    observer?.disconnect()
+                    initTracker(view)
+
+                    return
+                }
+            }
+        }
+    })
+
+
+
+
+    //observe body for child changes
+
+    observer.observe(document.body, {
+
+        childList: true,
+        subtree: true
+    })
+
+
+
+    console.log('watching for editor to appear')
 }
 
 
