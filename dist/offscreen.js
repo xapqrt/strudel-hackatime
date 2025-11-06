@@ -9,6 +9,7 @@
       xhr.open("POST", url, true);
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
+      xhr.setRequestHeader("X-Machine-Name", "Strudel/1.0.0 strudel-wakatime/1.0.0");
       xhr.onload = function() {
         console.log("[OFFSCREEN] XHR Response:", xhr.status);
         sendResponse({

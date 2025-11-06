@@ -103,7 +103,10 @@ export class HeartbeatTracker {
 
 
             //create the beat
-            // plugin field may be checked as fallback if User-Agent doesn't work
+            // WakaTime recognizes editor through multiple fields:
+            // 1. X-Machine-Name HTTP header (set in background.ts/offscreen.ts)
+            // 2. plugin field (this is what shows in dashboard)
+            // 3. editor field (fallback)
 
             const beat: heartbeat = {
                 entity: entity,
@@ -113,13 +116,9 @@ export class HeartbeatTracker {
                 is_write: isWrite,
                 project: project,
                 
-                // SPAM STRUDEL EVERYWHERE
+                // These fields work together to identify the editor
                 editor: "Strudel",
-                plugin: "Strudel/0.1.0",
-                branch: "strudel",
-                operating_system: "Strudel",
-                machine: "Strudel",
-                user_agent: "Strudel",
+                plugin: "Strudel/1.0.0 strudel-wakatime/1.0.0",
 
                 //optional metadata
                 lines: meta.lines,

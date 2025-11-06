@@ -51,13 +51,9 @@
           language: "JavaScript",
           is_write: isWrite,
           project,
-          // SPAM STRUDEL EVERYWHERE
+          // These fields work together to identify the editor
           editor: "Strudel",
-          plugin: "Strudel/0.1.0",
-          branch: "strudel",
-          operating_system: "Strudel",
-          machine: "Strudel",
-          user_agent: "Strudel",
+          plugin: "Strudel/1.0.0 strudel-wakatime/1.0.0",
           //optional metadata
           lines: meta.lines,
           lineno: meta.lineno,

@@ -307,7 +307,8 @@ async function sendBeat(beat, apiKey) {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-Machine-Name": "Strudel/1.0.0 strudel-wakatime/1.0.0"
         },
         body: JSON.stringify(beat)
       });
@@ -334,7 +335,8 @@ async function sendBeat(beat, apiKey) {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-Machine-Name": "Strudel/1.0.0 strudel-wakatime/1.0.0"
           },
           body: JSON.stringify(beat)
         });
@@ -380,7 +382,8 @@ async function fetchStatsFromAPI() {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${cfg.apiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-Machine-Name": "Strudel/1.0.0 strudel-wakatime/1.0.0"
       }
     });
     if (response.ok) {

@@ -8,7 +8,7 @@
         return null;
       }
       if (!contentEl.cmView) {
-        console.log("[HACKATIME] cmView property not found on .cm-content");
+        console.log("[HACKATIME] cmView property not found on .cmcontent");
         return null;
       }
       console.log("[HACKATIME] accessing cmView");
@@ -34,7 +34,7 @@
     if (event.source !== window) return;
     if (event.data.type === "HACKATIME_GET_STATE") {
       const requestId = event.data.requestId;
-      console.log("[HACKATIME PAGE SCRIPT] \u{1F4E8} Received state request ID:", requestId);
+      console.log("[HACKATIME PAGE SCRIPT] Received state request ID:", requestId);
       const state = getCodeMirrorState();
       console.log("[HACKATIME PAGE SCRIPT] sending state:", state ? "GOT STATE" : "NO STATE");
       if (state) {
@@ -48,12 +48,12 @@
       window.postMessage({
         type: "HACKATIME_STATE_RESPONSE",
         requestId,
-        // Echo back the request ID for Promise resolution
+        //js promise resolution its 3 am
         state
       }, "*");
     }
   });
-  console.log("[HACKATIME \u{1F4DC}] Page script injected into page context");
+  console.log("[HACKATIME] Page script injected into page context");
   window.postMessage({ type: "HACKATIME_PAGE_SCRIPT_READY" }, "*");
   setTimeout(() => {
     const contentEl = document.querySelector(".cm-content");
@@ -65,7 +65,7 @@
         console.log("[HACKATIME] .cm-content exists but cmView property not found");
       }
     } else {
-      console.log("[HACKATIME \u23F3] .cm-content element not found yet");
+      console.log("[HACKATIME] .cm-content element not found yet");
     }
   }, 100);
 })();

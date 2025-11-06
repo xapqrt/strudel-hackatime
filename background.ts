@@ -600,12 +600,9 @@ async function sendBeat(beat: heartbeat, apiKey: string): Promise<boolean> {
 
                 method: 'POST',
                 headers: {
-
-
                     'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
-
-
+                    'Content-Type': 'application/json',
+                    'X-Machine-Name': 'Strudel/1.0.0 strudel-wakatime/1.0.0'
                 },
                 body: JSON.stringify(beat)
             })
@@ -656,12 +653,10 @@ async function sendBeat(beat: heartbeat, apiKey: string): Promise<boolean> {
                 
                 const altResponse = await fetch(altUrl, {
                     method: 'POST',
-
-
-
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Machine-Name': 'Strudel/1.0.0 strudel-wakatime/1.0.0'
                     },
                     body: JSON.stringify(beat)
                 })
@@ -774,7 +769,8 @@ async function fetchStatsFromAPI(): Promise<any> {
             headers: {
 
                 'Authorization': `Bearer ${cfg.apiKey}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Machine-Name': 'Strudel/1.0.0 strudel-wakatime/1.0.0'
             }
         })
 

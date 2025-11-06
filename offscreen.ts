@@ -18,10 +18,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         xhr.open('POST', url, true)
 
         xhr.setRequestHeader('Content-Type', 'application/json')
-
-
         xhr.setRequestHeader('Authorization', `Bearer ${apiKey}`)
-        // i gope declarative solve this
+        
+        // WakaTime uses X-Machine-Name header to detect editor/plugin
+        // Format: "editor/version plugin/version"
+        xhr.setRequestHeader('X-Machine-Name', 'Strudel/1.0.0 strudel-wakatime/1.0.0')
 
 
 
