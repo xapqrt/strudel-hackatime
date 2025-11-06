@@ -280,3 +280,41 @@ body {
 #retryBtn {
     display: none;
 }
+
+
+.view-stats-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #1e3a5f;
+    border: 1px solid #38bdf8;
+    color: #7dd3fc;
+    text-decoration: none;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+.view-stats-btn:hover {
+    background: #2a4a6f;
+    border-color: #7dd3fc;
+}
+
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    background: #0d1117;
+    border: 1px solid #1f2933;
+    color: #e5e9eb;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: #38bdf8;
+}

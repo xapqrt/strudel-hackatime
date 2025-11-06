@@ -2,16 +2,13 @@
   "name": "strudel-hackatime",
   "version": "0.1.0",
   "description": "hackatime tracker for strudel live coding",
-
-
   "scripts": {
-    "build": "tsc",
+    "build": "node build.js",
     "watch": "tsc --watch"
   },
-
-
   "devDependencies": {
     "@types/chrome": "^0.0.270",
+    "esbuild": "^0.25.12",
     "typescript": "^5.3.3"
   }
 }

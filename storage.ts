@@ -2,7 +2,7 @@
 
 
 
-import { StorageConfig, QueuedBeat } from "./types"
+import { StorageConfig, QueuedBeat } from "./types.js"
 
 
 export class Store {
@@ -27,7 +27,10 @@ export class Store {
                 'enabled',
                 'lastSync',
                 'totalTime',
-                'streak'
+                'streak',
+                'projectName',
+                'beatCount',
+                'lastBeatTime'
             ])
 
 
@@ -40,7 +43,10 @@ export class Store {
                 enabled: result.enabled !== false,   
                 lastSync: result.lastSync || 0,
                 totalTime: result.totalTime || 0,
-                streak: result.streak || 0
+                streak: result.streak || 0,
+                projectName: result.projectName || 'strudel-live-coding',
+                beatCount: result.beatCount || 0,
+                lastBeatTime: result.lastBeatTime || 0
             } 
 
 

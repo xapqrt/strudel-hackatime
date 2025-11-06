@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <h1>Right-click each canvas and "Save image as..." to icons folder</h1>
+    <div>
+        <p>icon16.png:</p>
+        <canvas id="icon16" width="16" height="16"></canvas>
+    </div>
+    <div>
+        <p>icon48.png:</p>
+        <canvas id="icon48" width="48" height="48"></canvas>
+    </div>
+    <div>
+        <p>icon128.png:</p>
+        <canvas id="icon128" width="128" height="128"></canvas>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // bg - cyan
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(0, 0, size, size);
+            
+            // text - dark
+            ctx.fillStyle = '#0a0e14';
+            ctx.font = `bold ${Math.floor(size * 0.6)}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('H', size / 2, size / 2);
+        }
+
+        createIcon('icon16', 16);
+        createIcon('icon48', 48);
+        createIcon('icon128', 128);
+    </script>
+</body>
+</html>

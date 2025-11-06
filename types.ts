@@ -11,20 +11,26 @@ export interface heartbeat {
     entity : string
     type: "file"
     time: number 
-    language: "javascript"
+    language: string
     is_write: boolean
+    project?: string
+    editor?: string
+    plugin?: string
 
 
 
     //these are the optional ones but amma try to send em too
 
 
-    project?: string
     lines?: number
     lineno?: number
     cursorpos?: number
     branch?: string
     category?: string
+    source_type?: string
+    operating_system?: string
+    machine?: string
+    user_agent?: string
 
 
 }
@@ -57,6 +63,9 @@ export interface StorageConfig {
     
     totalTime?: number
     streak?: number
+    projectName?: string
+    beatCount?: number
+    lastBeatTime?: number
 
 }
 

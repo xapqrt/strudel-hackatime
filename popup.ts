@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     loadConfig()
-    loadStats()
     loadQueueSize()
 
 
@@ -48,12 +47,18 @@ async function loadConfig(): Promise<void> {
 
 
             const enabledCheckbox = document.getElementById('enabled') as HTMLInputElement
+            
+            const projectNameInput = document.getElementById('projectName') as HTMLInputElement
 
 
 
 
             if(apiKeyInput) {
                 apiKeyInput.value = response.apiKey || ''
+            }
+            
+            if(projectNameInput) {
+                projectNameInput.value = response.projectName || 'strudel-live-coding'
             }
 
 
@@ -89,6 +94,7 @@ async function saveConfig(): Promise<void> {
 
     const apiKeyInput = document.getElementById('apiKey') as HTMLInputElement
     const enabledCheckbox = document.getElementById('enabled') as HTMLInputElement
+    const projectNameInput = document.getElementById('projectName') as HTMLInputElement
 
 
 
@@ -96,7 +102,8 @@ async function saveConfig(): Promise<void> {
     const config = {
 
         apiKey: apiKeyInput?.value || '',
-        enabled: enabledCheckbox?.checked !== false
+        enabled: enabledCheckbox?.checked !== false,
+        projectName: projectNameInput?.value || 'strudel-live-coding'
     }
 
 
@@ -113,13 +120,6 @@ async function saveConfig(): Promise<void> {
 
 
         showStatus('settings saved', 'success')
-
-
-        //reload stats after save
-
-        setTimeout(() => {
-            loadStats()
-        }, 500)
 
 
     } catch(e) {
@@ -205,6 +205,29 @@ async function loadStats(): Promise<void> {
                 } else {
 
                     todayEl.textContent = '0m'
+                }
+            }
+            
+            
+            //beat count and last beat
+            const response = await chrome.runtime.sendMessage({ type: 'GET_CONFIG' })
+            
+            const beatCountEl = document.getElementById('beatCount')
+            if(beatCountEl && response) {
+                beatCountEl.textContent = (response.beatCount || 0).toString()
+            }
+            
+            const lastBeatEl = document.getElementById('lastBeat')
+            if(lastBeatEl && response && response.lastBeatTime) {
+                const diff = Date.now() - response.lastBeatTime
+                const mins = Math.floor(diff / 60000)
+                if(mins < 1) {
+                    lastBeatEl.textContent = 'just now'
+                } else if(mins < 60) {
+                    lastBeatEl.textContent = `${mins}m ago`
+                } else {
+                    const hours = Math.floor(mins / 60)
+                    lastBeatEl.textContent = `${hours}h ago`
                 }
             }
 

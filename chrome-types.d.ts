@@ -46,4 +46,31 @@ declare namespace chrome {
         function setBadgeText(details: { text: string }): Promise<void>
         function setBadgeBackgroundColor(details: { color: string }): Promise<void>
     }
+    
+    namespace declarativeNetRequest {
+        
+        interface Rule {
+            id: number
+            priority: number
+            action: {
+                type: string
+                requestHeaders?: Array<{
+                    header: string
+                    operation: string
+                    value: string
+                }>
+            }
+            condition: {
+                urlFilter: string
+                resourceTypes: string[]
+            }
+        }
+        
+        function updateDynamicRules(options: {
+            removeRuleIds?: number[]
+            addRules?: Rule[]
+        }): Promise<void>
+        
+        function getDynamicRules(): Promise<Rule[]>
+    }
 }

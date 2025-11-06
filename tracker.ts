@@ -1,8 +1,8 @@
 //heartbeat tracking file, dis also crated a basic payload
 
 
-import { heartbeat, HeartbeatMetadata } from './types'
-import { MetadataExtractor } from './metadata'
+import { heartbeat, HeartbeatMetadata } from './types.js'
+import { MetadataExtractor } from './metadata.js'
 
 
 
@@ -11,38 +11,29 @@ import { MetadataExtractor } from './metadata'
 
 export class HeartbeatTracker {
 
-
     private lastBeatTime: number = 0
     private lastEntity: string = ''
-
     private extractor: MetadataExtractor | null = null
-
 
     private THROTTLE_MS = 30000  
     
     //30 seconds wakatime spec
 
 
-
-
     constructor() {
-
-        console.log("tracker init")
+        // minimal logging
+        const VERBOSE = false
+        function log(...args: any[]) { if (VERBOSE) console.log(...args) }
+        log("tracker init")
     }
-
-
-
-
 
 
     //set the metadata extractor
 
-
-
     setExtractor(ext: MetadataExtractor): void {
-
         this.extractor = ext
-        console.log("extractor attached")
+        // debug
+        if ((globalThis as any).__TRACKER_VERBOSE) console.log("extractor attached")
     }
 
 
@@ -62,48 +53,30 @@ export class HeartbeatTracker {
         const timeSinceLast = now - this.lastBeatTime
 
 
-
         //send if its been more than rate limit seconds
-
 
         if(timeSinceLast >= this.THROTTLE_MS) {
             return true
         }
 
 
-
-
         //if files or pattern switched
-
         if(entity !== this.lastEntity) {
-
             return true
         }
-
-
 
 
         return false
     }
 
 
-
-
-
-
-
     //create a heartbeat object
-
-    createBeat(isWrite: boolean): heartbeat | null {
-
+    async createBeat(isWrite: boolean): Promise<heartbeat | null> {
 
         if(!this.extractor) {
-
             console.error("no extractor attached yet")
             return null
         }
-
-
 
 
         try {
@@ -111,7 +84,7 @@ export class HeartbeatTracker {
 
             const meta: HeartbeatMetadata = this.extractor.getCursorMeta()
             const entity = this.extractor.getEntity()
-            const project = this.extractor.getProject()
+            const project = await this.extractor.getProject()
 
 
 
@@ -119,8 +92,8 @@ export class HeartbeatTracker {
             //check rate limit
 
             if(!this.shouldSendBeat(entity)) {
-
-                console.log("throttled, skipping beat")
+                // throttled - don't spam logs
+                if ((globalThis as any).__TRACKER_VERBOSE) console.log("throttled, skipping beat")
                 return null
             }
 
@@ -130,27 +103,38 @@ export class HeartbeatTracker {
 
 
             //create the beat
-
+            // plugin field may be checked as fallback if User-Agent doesn't work
 
             const beat: heartbeat = {
-
                 entity: entity,
                 type: "file",
                 time: Date.now() / 1000,  
-                language: "javascript",
+                language: "JavaScript",
                 is_write: isWrite,
-
-
+                project: project,
+                
+                // SPAM STRUDEL EVERYWHERE
+                editor: "Strudel",
+                plugin: "Strudel/0.1.0",
+                branch: "strudel",
+                operating_system: "Strudel",
+                machine: "Strudel",
+                user_agent: "Strudel",
 
                 //optional metadata
-
-                project: project,
                 lines: meta.lines,
                 lineno: meta.lineno,
                 cursorpos: meta.cursorpos,
-                category: "coding",
-                branch: "main"
+                category: "coding"
             }
+            
+            console.log('metadata being sent:', {
+                lines: meta.lines,
+                lineno: meta.lineno, 
+                cursorpos: meta.cursorpos
+            })
+            
+            console.log('beat created with project:', project)
 
 
 
@@ -164,56 +148,35 @@ export class HeartbeatTracker {
 
 
 
-            console.log("created beat:", beat)
-
+            if ((globalThis as any).__TRACKER_VERBOSE) console.log("created beat:", beat)
             return beat
 
-
         } catch(e) {
-
             console.error("failed to create beat:", e)
             return null
         }
     }
 
 
-
-
-
-
     //record typing 
 
-
-    recordEdit(): heartbeat | null {
-
-        return this.createBeat(true)
+    async recordEdit(): Promise<heartbeat | null> {
+        return await this.createBeat(true)
     }
-
-
-
 
 
     //reading one, it shows on hackatime i saw
 
-
-    recordRead(): heartbeat | null {
-
-
-        return this.createBeat(false)
+    async recordRead(): Promise<heartbeat | null> {
+        return await this.createBeat(false)
     }
 
 
-
-
-
-
     //manual reset when i debug
-
     reset(): void {
-
         this.lastBeatTime = 0
         this.lastEntity = ''
 
-        console.log("tracker reset")
+        if ((globalThis as any).__TRACKER_VERBOSE) console.log("tracker reset")
     }
 }

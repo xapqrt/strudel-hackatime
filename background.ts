@@ -1,9 +1,13 @@
 //background service worker for sending heartbeats to hackatime
 
+//holy long file, took the most mount of time
+
+//very core file too mind u
 
 
-import { heartbeat, QueuedBeat } from './types'
-import { Store } from './storage'
+
+import { heartbeat, QueuedBeat } from './types.js'
+import { Store } from './storage.js'
 
 
 
@@ -11,13 +15,197 @@ import { Store } from './storage'
 const store = new Store()
 
 
+//hey josias btw everything fromt he docs
 const API_BASE = 'https://hackatime.hackclub.com/api/hackatime/v1'
-const BATCH_INTERVAL = 60000 
+const BATCH_INTERVAL = 60000
+
+
+
+
+
+
+
+
+//adding the user agent header as to try to inject editor name
+
+
+
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.declarativeNetRequest.updateDynamicRules({
+        removeRuleIds: [1],
+        addRules: [{
+            id: 1,
+            priority: 1,
+            action: {
+                type: 'modifyHeaders',
+                requestHeaders: [{
+                    header: 'User-Agent',
+
+                    operation: 'set',
+                    value: 'wakatime/v1.0.0 (chrome-extension) strudel-wakatime/0.1.0'
+                }]
+
+
+
+            },
+            condition: {
+                urlFilter: '*://hackatime.hackclub.com/*',
+                resourceTypes: ['xmlhttprequest']  // Specifically target XHR for better reliability
+            }
+
+
+        }]
+    }).then(() => {
+
+        console.log('       User-Agent header rule set for Hackatime API')
+        console.log('            URL Filter: *://hackatime.hackclub.com/*')
+        console.log('                    User-Agent: wakatime/v1.0.0 (chrome-extension) strudel-wakatime/0.1.0')
+        
+        
+
+
+
+
+
+
+        // second attempt of editor name
+
+
+
+        chrome.declarativeNetRequest.getDynamicRules().then(rules => {
+            console.log('will try to seach for dnr rules broski:', rules)
+            if (rules.length === 0) {
+
+
+                console.error('does not work this shi brochaho')
+            } else {
+
+
+                console.log('Rule count:', rules.length)
+            }
+
+
+        })
+    }).catch(err => {
+        console.error('asnt able to set err:', err)
+    })
+})
+
+
+
+
+
+
+
+//js offscreen doc for xhr, perplexity said this might*might* i emphasize fix it
+
+
+//attempt 4
+
+
+async function setupOffscreenDocument() {
+
+
+    //check if chrome.offscreen exists
+
+
+
+    if(!chrome.offscreen) {
+
+
+        console.log('nah dis shit off')
+        return
+    }
+
+
+
+
+
+    try{
+
+
+
+
+        //check if already exists
+
+
+        const existing = await chrome.runtime.getContexts({
+            contextTypes: ['OFFSCREEN_DOCUMENT' as any]
+        })
+
+
+        
+        
+        if(existing.length > 0) {
+
+
+            console.log(' might exists')
+            return  
+        }
+    
+        
+        
+        await chrome.offscreen.createDocument({
+            url: 'offscreen.html',
+
+
+            reasons: ['DOM_SCRAPING' as any],
+
+            justification: 'xhr for api calls'
+        })
+
+
+        console.log('offscreen doc created')
+
+    }catch(e){
+
+        console.error('couldnt create offscreen:', e)
+    }
+
+
+}
+
+console.log('alr startin the background service worker')
+
+
+
+
+
+
+//please dont die
+
+
+
+setupOffscreenDocument()
+
+
+
+
+chrome.declarativeNetRequest.getDynamicRules().then(rules => {
+
+    console.log(' dnr rule tryna select')
+
+
+    if (rules.length === 0) {
+        console.error('nah cant see no useragent')
+
+        
+    } 
+    
+    else {
+
+
+
+
+        console.log('Found', rules.length, 'active rule(s):', rules)
+    }
+}) 
 
 
 
 
 //listen for heartbeats from content script
+
 
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -28,20 +216,28 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         console.log('got beat from content:', msg.beat)
         
 
-        queueBeat(msg.beat)
+
+        // Try to send immediately, only queue if failed js like tihs vs code one
+
+
+
+        handleBeat(msg.beat)
         sendResponse({ ok: true })
 
 
     } else if(msg.type === 'GET_CONFIG') {
 
 
+
         //popup asking for config
+
+
 
         store.loadConfig().then(cfg => {
             sendResponse(cfg)
         })
 
-        return true  //async response
+        return true  
     }
 
 
@@ -58,6 +254,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 
     else if(msg.type === 'GET_QUEUE_SIZE'){
+
+
 
         //ppoup asking for queue size
 
@@ -119,28 +317,76 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 
 
+//alr this the beat handler, hope it doesnt explode when i debug, website crashed twice
+
+
+async function handleBeat(beat: heartbeat): Promise<void> {
+    try {
+
+
+
+
+
+        const cfg = await store.loadConfig()
+        
+
+        console.log('checking config')
+
+
+        console.log('   API Key:', cfg.apiKey ? `${cfg.apiKey.slice(0, 8)}...` : 'NOT SET')
+
+        console.log('   Enabled:', cfg.enabled !== false ? ' YES' : 'NO')
+        
+        if (!cfg.apiKey) {
+            console.error('NO API KEY SET! Go to extension popup and add your Hackatime API key!')
+            await queueBeat(beat)
+            return
+        }
+        
+        if (cfg.enabled === false) {
+            console.log('extension disabled, queueing beat')
+            await queueBeat(beat)
+            return
+        }
+        
+        console.log('tryna send beat now')
+        const success = await sendBeat(beat, cfg.apiKey)
+        
+        if (success) {
+            console.log(' beat sent, NOT queued')
+            // Update stats
+            cfg.beatCount = (cfg.beatCount || 0) + 1
+            cfg.lastBeatTime = Date.now()
+            await store.saveConfig(cfg)
+        } else {
+            console.log('send failed, queueing')
+            await queueBeat(beat)
+        }
+        
+    } catch(e) {
+        console.error('Error handling beat:', e)
+        await queueBeat(beat)
+    }
+}
+
+
 //queue a beat for sending later
 
 
 async function queueBeat(beat: heartbeat): Promise<void> {
 
-
     try {
 
         const queue = await store.getQueue()
 
-
         const queued: QueuedBeat = {
-
             beat: beat,
             retries: 0,
             queued_at: Date.now()
         }
 
 
-
         queue.push(queued)
-
 
         await store.saveQueue(queue)
 
@@ -152,12 +398,6 @@ async function queueBeat(beat: heartbeat): Promise<void> {
 
         
         updateBadge(queue.length)
-
-
-
-        //try to send immediately
-
-        processQueue()
 
 
     } catch(e) {
@@ -313,48 +553,136 @@ async function processQueue(): Promise<void> {
 
 async function sendBeat(beat: heartbeat, apiKey: string): Promise<boolean> {
 
-
     try {
-
         const url = `${API_BASE}/users/current/heartbeats`
+        
+        console.log('sending beat to:', url)
+        console.log('payload:', JSON.stringify(beat, null,2))
 
-
-
-        const response = await fetch(url, {
-
-            method: 'POST',
-            headers: {
-
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'User-Agent': 'strudel-hackatime/0.1.0'
-            },
-
-            body: JSON.stringify(beat)
-        })
+        let response: any
 
 
 
 
-        if(response.ok) {
 
-            console.log('api responded ok')
-            return true
+        //try offscreen doc first (for xhr)
+
+        //dis might fix the editor one
+
+        try{
+            console.log('trying offscreen doc with xhr')
+            response = await chrome.runtime.sendMessage({
 
 
-        } else {
 
-            const txt = await response.text()
-            console.error(`api error ${response.status}:`, txt)
+                type: 'SEND_HEARTBEAT',
+                url: url,
+                payload: beat,
+                apiKey: apiKey
 
-            return false
+
+            })
+            
+
+
+            console.log('got response from offscreen:', response)
+        }catch(e){
+            console.log('fall back fetch:', e)
+            response = null
+        }
+        
+
+        
+        if(!response){
+            console.log('using regular fetch')
+
+            const fetchResp = await fetch(url, {
+
+                method: 'POST',
+                headers: {
+
+
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+
+
+                },
+                body: JSON.stringify(beat)
+            })
+            
+            response = {
+
+
+                success: fetchResp.ok,
+
+                status: fetchResp.status,
+
+                responseText: await fetchResp.text()
+
+
+            }
         }
 
 
 
-    } catch(e) {
 
-        console.error('fetch failed:', e)
+        //response when success i gotta know
+
+        if(response.success && response.status >= 200 && response.status < 300) {
+
+
+            console.log('api ok!')
+
+            console.log('response:', response.responseText.substring(0, 200))
+            
+            // increment beat counter and update time
+            const cfg = await store.loadConfig()
+            cfg.beatCount = (cfg.beatCount || 0) + 1
+            cfg.lastBeatTime = Date.now()
+            await store.saveConfig(cfg)
+            
+            return true
+
+        } else {
+            console.error(`API error ${response.status}:`, response.responseText || response.error)
+            
+            
+            if (response.status === 404) {
+
+
+
+                const altUrl = 'https://hackatime.hackclub.com/api/v1/my/heartbeats'
+                console.log('Trying:', altUrl)
+                
+                const altResponse = await fetch(altUrl, {
+                    method: 'POST',
+
+
+
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(beat)
+                })
+
+
+                
+
+                if (altResponse.ok) {
+                    console.log('the next one worked btw')
+                    return true
+                } else {
+                    const altTxt = await altResponse.text()
+                    console.error(`um change the url ig ${altResponse.status}:`, altTxt)
+                }
+            }
+
+            return false
+        }
+        
+    } catch(e) {
+        console.error('Fetch failed:', e)
         return false
     }
 }
@@ -432,7 +760,7 @@ async function fetchStatsFromAPI(): Promise<any> {
 
 
 
-        const url = `${API_BASE}/users/current/summaries?start=${startStr}&end=${endStr}`
+        const url = `${API_BASE}/summaries?start=${startStr}&end=${endStr}`
 
 
 
